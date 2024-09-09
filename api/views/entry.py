@@ -48,19 +48,16 @@ def receive_patient_via_file(request: HttpRequest, file: UploadedFile = File(...
 
 
 def process_data(data):
-    patients_data = []
-
     for _, row in data.iterrows():
-        patients_data.append({
+        full_name = row["Nome"].split()
+        first_name = full_name[0]
+        last_name = " ".join(full_name[1:]) if len(full_name) > 1 else ""
+        birth_date = pandas.to_datetime(row["Data de Nascimento"], dayfirst=True).strftime('%Y-%m-%d')
+        gender = "male" if row["Gênero"].lower() == "masculino" else "female"
+
+        send_patient_to_fhir.delay({
             "resourceType": "Patient",
-            "name": [{"use": "official", "family": row["last_name"], "given": [row["first_name"]]}],
-            "gender": row["gender"],
-            "birthDate": row["birthdate"]
+            "name": [{"use": "official", "family": last_name, "given": [first_name]}],
+            "gender": gender,
+            "birthDate": birth_date,
         })
-
-    async def send_to_task():
-        for patient_data in patients_data:
-            send_patient_to_fhir.delay(patient_data)
-
-    import asyncio
-    asyncio.run(send_to_task())
