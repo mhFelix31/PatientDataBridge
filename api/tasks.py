@@ -1,8 +1,12 @@
+import os
+
 import httpx
 from celery import shared_task
+from dotenv import load_dotenv
 
-from config import settings
+load_dotenv()
 
+FHIR_ENDPOINT = os.getenv("FHIR_ENDPOINT", "http://localhost:8080/fhir")
 
 @shared_task
 def send_patient_to_fhir(patient_data):
