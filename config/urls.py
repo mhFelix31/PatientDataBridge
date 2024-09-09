@@ -22,6 +22,7 @@ from ninja import NinjaAPI
 from api.views import entry
 
 api = NinjaAPI
+api.add_router("/", entry.router)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
