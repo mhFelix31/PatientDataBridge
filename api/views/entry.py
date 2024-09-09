@@ -2,7 +2,8 @@ from io import StringIO
 
 import pandas
 from django.http import HttpRequest
-from ninja import Router, Schema
+from ninja import Router, Schema, File
+from ninja.files import UploadedFile
 
 from api.tasks import send_patient_to_fhir
 
@@ -19,24 +20,31 @@ class DefaultResponse(Schema):
 
 DEFAULT_RESPONSE = "CSV uploaded and processing started."
 
-
-@router.post("/patient/file", response=DefaultResponse)
-def receive_patient_via_file(request: HttpRequest, file: any):
-    data = pandas.read_csv(file)
-
-    process_data(data)
-
-    return DEFAULT_RESPONSE
-
-
-@router.post("/patient", response=DefaultResponse)
+@router.post("/csv", response=DefaultResponse)
 def receive_patient_via_text(request: HttpRequest, body: PatientInJSONText):
     csv_string_io = StringIO(body.data)
     data = pandas.read_csv(csv_string_io, sep=',', header=None)
 
     process_data(data)
 
-    return DEFAULT_RESPONSE
+    return {"message": DEFAULT_RESPONSE}
+
+
+@router.post("/file", response=DefaultResponse)
+def receive_patient_via_file(request: HttpRequest, file: UploadedFile = File(...)):
+    file_read = file.read()
+    try:
+        file_decoded = file_read.decode("utf-8")
+    except UnicodeDecodeError:
+        file_decoded = file_read.decode("ISO-8859-1")
+
+    data = pandas.read_csv(StringIO(file_decoded))
+
+    process_data(data)
+
+    return {'message':DEFAULT_RESPONSE}
+
+
 
 
 def process_data(data):
