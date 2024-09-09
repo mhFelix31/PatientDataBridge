@@ -18,6 +18,8 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -28,7 +30,7 @@ SECRET_KEY = str(os.getenv("SECRET_KEY", "django-insecure-s7@fs5^%2837mz8l^(+bf+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.getenv("DEBUG") == "True" else False
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split("|")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split("|")
 
 # Application definition
 
@@ -129,4 +131,4 @@ PROMETHEUS_METRIC_NAMESPACE = os.getenv("PROMETHEUS_METRIC_NAMESPACE", "patient_
 CELERY_BROKER_URL = os.getenv("CELERY_REDIS_ENDPOINT", 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.getenv("CELERY_REDIS_ENDPOINT", 'redis://localhost:6379/0')
 
-FHIR_ENDPOINT = os.getenv("FHIR_ENDPOINT", "http://localhost:8080/hapi-fhir-jpaserver/fhir")
+FHIR_ENDPOINT = os.getenv("FHIR_ENDPOINT", "http://localhost:8080/fhir")
