@@ -1,19 +1,21 @@
-
 from io import StringIO
-from django.http import HttpRequest
-from ninja import File, Router, Schema
+
 import pandas
+from django.http import HttpRequest
+from ninja import Router, Schema
 
 from api.tasks import send_patient_to_fhir
 
-
 router = Router()
 
+
 class PatientInJSONText(Schema):
-    data:str
+    data: str
+
 
 class DefaultResponse(Schema):
     message: str
+
 
 DEFAULT_RESPONSE = "CSV uploaded and processing started."
 
@@ -26,13 +28,14 @@ def receive_patient_via_file(request: HttpRequest, file: any):
 
     return DEFAULT_RESPONSE
 
+
 @router.post("/patient", response=DefaultResponse)
 def receive_patient_via_text(request: HttpRequest, body: PatientInJSONText):
-    csv_string_IO = StringIO(body.data)
-    data = pandas.read_csv(csv_string_IO, sep=',', header=None)
-    
+    csv_string_io = StringIO(body.data)
+    data = pandas.read_csv(csv_string_io, sep=',', header=None)
+
     process_data(data)
-    
+
     return DEFAULT_RESPONSE
 
 
@@ -46,13 +49,10 @@ def process_data(data):
             "gender": row["gender"],
             "birthDate": row["birthdate"]
         })
-    
+
     async def send_to_task():
         for patient_data in patients_data:
             send_patient_to_fhir.delay(patient_data)
-    
+
     import asyncio
     asyncio.run(send_to_task())
-
-    
-    
