@@ -19,10 +19,8 @@ from django.contrib import admin
 from django.urls import path
 from ninja import NinjaAPI
 
-from api.views import entry
-
-api = NinjaAPI
-api.add_router("/", entry.router)
+api = NinjaAPI()
+api.add_router("/patient/", "api.views.entry.router")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
