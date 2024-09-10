@@ -20,6 +20,7 @@ class DefaultResponse(Schema):
 
 DEFAULT_RESPONSE = "CSV uploaded and processing started."
 
+
 @router.post("/csv", response=DefaultResponse)
 def receive_patient_via_text(request: HttpRequest, body: PatientInJSONText):
     csv_string_io = StringIO(body.data)
@@ -42,9 +43,7 @@ def receive_patient_via_file(request: HttpRequest, file: UploadedFile = File(...
 
     process_data(data)
 
-    return {'message':DEFAULT_RESPONSE}
-
-
+    return {'message': DEFAULT_RESPONSE}
 
 
 def process_data(data):
