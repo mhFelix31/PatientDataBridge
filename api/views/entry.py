@@ -23,7 +23,7 @@ DEFAULT_RESPONSE = "CSV uploaded and processing started."
 @router.post("/csv", response=DefaultResponse)
 def receive_patient_via_text(request: HttpRequest, body: PatientInJSONText):
     csv_string_io = StringIO(body.data)
-    data = pandas.read_csv(csv_string_io, sep=',', header=None)
+    data = pandas.read_csv(csv_string_io)
 
     process_data(data)
 
