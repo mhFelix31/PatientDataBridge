@@ -19,7 +19,10 @@ from django.contrib import admin
 from django.urls import path, include
 from ninja import NinjaAPI
 
-api = NinjaAPI()
+api = NinjaAPI(
+    title="Patient Data Bridge API",
+    description="This is a API made to process CSV data and serve it to a FHIR server."
+)
 api.add_router("/patient/", "api.views.entry.router")
 
 urlpatterns = [
