@@ -41,5 +41,7 @@ Django-API endpoint will be located at http://127.0.0.1:8000 and documentation a
 Grafana endpoint will be located at http://127.0.0.1:3000 .
 
 *Note*: to run tests, you will need to run the command `pytest` inside a poetry environment or `poetry run pytest`.
+**The pytest command will not work inside the container, neither the .devcontainer or the application compose have
+a docker wormhole setup to run the Testcontainer Lib properly.
 Tests might take a little bit of time in the first run as it uses TestContainer library and will need
 to pull docker images. To run coverage `poetry run pytest --cov`
