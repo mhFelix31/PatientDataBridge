@@ -21,8 +21,13 @@ class DefaultResponse(Schema):
 DEFAULT_RESPONSE = "CSV uploaded and processing started."
 
 
-@router.post("/csv", response=DefaultResponse)
+@router.post(path="/csv", response=DefaultResponse, tags=["Send info"])
 def receive_patient_via_text(request: HttpRequest, body: PatientInJSONText):
+    """
+    Receives the patient info as JSON containing a CSV string
+    Example:
+    {"data": "Nome,CPF,Gênero,Data de Nascimento,Telefone,País de Nascimento,Observação\\nJoão da Silva,123.456.789-00,Masculino,10/05/1980,(11) 1234-5678,Brasil,"}
+    """
     csv_string_io = StringIO(body.data)
     data = pandas.read_csv(csv_string_io)
 
@@ -31,8 +36,12 @@ def receive_patient_via_text(request: HttpRequest, body: PatientInJSONText):
     return {"message": DEFAULT_RESPONSE}
 
 
-@router.post("/file", response=DefaultResponse)
+@router.post(path="/file", response=DefaultResponse, tags=["Send info"])
 def receive_patient_via_file(request: HttpRequest, file: UploadedFile = File(...)):
+    """
+    Receives the patient info as a CSV file
+    """
+
     file_read = file.read()
     try:
         file_decoded = file_read.decode("utf-8")
