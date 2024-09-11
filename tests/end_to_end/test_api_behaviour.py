@@ -1,5 +1,5 @@
 import json
-from io import StringIO
+from io import BytesIO
 
 import pytest
 from django.test import Client
@@ -23,12 +23,25 @@ def test_upload_csv_as_text(csv_text):
 
 
 @pytest.mark.django_db
-def test_upload_csv_as_file(csv_text):
+def test_upload_csv_as_file_with_utf_encoding(csv_text):
     client = Client()
 
-    csv_file = StringIO(csv_text)
+    csv_file = BytesIO(csv_text.encode('utf-8'))
+    payload = {'file': csv_file}
 
-    response = client.post("/api/patient/file", {'file': csv_file}, format='multipart')
+    response = client.post("/api/patient/file", data=payload, format='multipart')
+
+    assert response.status_code == 200
+    assert json.loads(response.content.decode()) == {"message": DEFAULT_RESPONSE}
+
+@pytest.mark.django_db
+def test_upload_csv_as_file_with_iso_encoding(csv_text):
+    client = Client()
+
+    csv_file = BytesIO(csv_text.encode('ISO-8859-1'))
+    payload = {'file': csv_file}
+
+    response = client.post("/api/patient/file", data=payload, format='multipart')
 
     assert response.status_code == 200
     assert json.loads(response.content.decode()) == {"message": DEFAULT_RESPONSE}
